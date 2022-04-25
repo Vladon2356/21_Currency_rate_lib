@@ -5,22 +5,24 @@ import json
 from CurrencyRate.get_data import get_values_for_date_from_api, get_values_for_range_date_from_api
 from CurrencyRate.exceptions import ApiNotResponse
 
-def save_to_json_file(currency_rate, start_date, end_date=0):
+
+def save_to_json_file(currency_rate, start_date, end_date=0, path: str = ''):
     if end_date != 0:
-        out_file = open(f"currency_rate_from_{start_date}_to_{end_date}.json", "w")
+        out_file = open(f"{path}/currency_rate_from_{start_date}_to_{end_date}.json", "w")
     else:
-        out_file = open(f"currency_rate_for_{start_date}.json", "w")
+        out_file = open(f"{path}/currency_rate_for_{start_date}.json", "w")
     json.dump(currency_rate, out_file)
     out_file.close()
     print('Done')
 
-def save_to_csv_file(currency_rate, start_date, end_date=0):
+
+def save_to_csv_file(currency_rate, start_date, end_date=0, path: str = ''):
     mb_rate = currency_rate['Monobank']
     pb_rate = currency_rate['Privat24']
     if end_date != 0:
-        filename = f'currency_rate_from_{start_date}_to_{end_date}.csv'
+        filename = f'{path}/currency_rate_from_{start_date}_to_{end_date}.csv'
     else:
-        filename = f'currency_rate_for_{date}.csv'
+        filename = f'{path}/currency_rate_for_{date}.csv'
     with open(filename, "w") as file:
         writer = csv.writer(file)
         writer.writerow(
@@ -31,11 +33,13 @@ def save_to_csv_file(currency_rate, start_date, end_date=0):
             print(currency, mb_rate[currency])
             try:
                 writer.writerow(
-                    [datetime.date.today().strftime('%d.%m.%Y'), 'Monobank', currency, mb_rate[currency]['rateSell'], mb_rate[currency]['rateBuy']]
+                    [datetime.date.today().strftime('%d.%m.%Y'), 'Monobank', currency, mb_rate[currency]['rateSell'],
+                     mb_rate[currency]['rateBuy']]
                 )
             except KeyError:
                 writer.writerow(
-                    [datetime.date.today().strftime('%d.%m.%Y'), 'Monobank', currency, mb_rate[currency]['rateCross'], mb_rate[currency]['rateCross']]
+                    [datetime.date.today().strftime('%d.%m.%Y'), 'Monobank', currency, mb_rate[currency]['rateCross'],
+                     mb_rate[currency]['rateCross']]
                 )
         for date in pb_rate:
             rate = pb_rate[date]
@@ -53,6 +57,7 @@ def save_to_csv_file(currency_rate, start_date, end_date=0):
                         [date, 'Privat24', currency_ticker, rateSell, rateBuy]
                     )
     print('Done')
+
 
 def parse_by_date(date, save_to_json: bool = False, save_to_csv: bool = False):
     response = get_values_for_date_from_api(date)
@@ -92,13 +97,13 @@ def parse_by_date(date, save_to_json: bool = False, save_to_csv: bool = False):
 
     result = {'Monobank': rate_mb, 'Privat24': rate_pb}
     if save_to_csv:
-        save_to_csv_file(currency_rate=result,start_date=date)
+        save_to_csv_file(currency_rate=result, start_date=date)
     if save_to_json:
-        save_to_json_file(currency_rate=result,start_date=date)
+        save_to_json_file(currency_rate=result, start_date=date)
     return result
 
 
-def parse_by_range_date(start_date, end_date, save_to_json: bool = False, save_to_csv: bool=False):
+def parse_by_range_date(start_date, end_date, save_to_json: bool = False, save_to_csv: bool = False):
     response = get_values_for_range_date_from_api(start_date, end_date)
     rate_pb = {}
     for date in response['Privat24']:
@@ -140,9 +145,9 @@ def parse_by_range_date(start_date, end_date, save_to_json: bool = False, save_t
     result = {'Monobank': rate_mb, 'Privat24': rate_pb}
 
     if save_to_csv:
-        save_to_csv_file(currency_rate=result,start_date=start_date, end_date=end_date)
+        save_to_csv_file(currency_rate=result, start_date=start_date, end_date=end_date)
     if save_to_json:
-        save_to_json_file(currency_rate=result,start_date=start_date, end_date=end_date)
+        save_to_json_file(currency_rate=result, start_date=start_date, end_date=end_date)
     return result
 
 

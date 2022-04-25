@@ -1,11 +1,6 @@
 import datetime
 
 import requests
-from bs4 import BeautifulSoup
-
-URL = ''
-HEADERS = {'': '', '': ''}
-soup = BeautifulSoup()
 
 
 def get_values_for_date_from_api(date):

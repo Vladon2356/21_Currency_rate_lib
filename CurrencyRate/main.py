@@ -1,5 +1,5 @@
 import datetime
-
+from datetime import date
 import matplotlib.pyplot as plt
 
 from CurrencyRate.parse_response import parse_by_range_date, parse_by_date
@@ -46,23 +46,17 @@ def drow_graph(result, for_sale: bool):
         plt.show()
 
 
-def main():
-    action = int(input('If You wount get values for range date enter - 1 else - 2 : '))
-    if action == 2:
-        day,month, year = [int(i) for i in input('Please enter date in format "d.m.y : "').split('.')]
-        start_date = datetime.date(day=day, month=month, year=year)
-        result = parse_by_date(start_date, save_to_json=True)
+def main(start_date: date,
+         end_date: date = 0,
+         to_csv: bool = False,
+         to_json: bool = False,
+         add_graph: bool = False,
+         path_where_save :str = ''):
+    if end_date == 0:
+        result = parse_by_date(start_date, save_to_json=to_json, save_to_csv=to_csv)
     else:
-        start_day,start_month, start_year = [int(i) for i in input('Please enter start date in format "d.m.y" : ').split('.')]
-        start_date = datetime.date(day=start_day, month=start_month, year=start_year)
-        end_day,end_month, end_year = [int(i) for i in input('Please enter end date in format "d.m.y" : ').split('.')]
-        end_date = datetime.date(day=end_day, month=end_month, year=end_year)
-        result = parse_by_range_date(start_date=start_date, end_date=end_date, save_to_json=True,save_to_csv=True)
+        result = parse_by_range_date(start_date=start_date, end_date=end_date, save_to_json=to_json, save_to_csv=to_csv)
 
-        graph = input('Add graph (+ or -)')
-        if graph.strip() == '+':
-            drow_graph(result,for_sale=True)
-
+        if add_graph:
+            drow_graph(result, for_sale=True)
     return result
-
-main()
