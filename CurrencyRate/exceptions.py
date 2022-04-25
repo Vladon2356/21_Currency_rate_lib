@@ -1,0 +1,2 @@
+class ApiNotResponse(Exception):
+    pass
