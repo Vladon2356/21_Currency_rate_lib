@@ -2,7 +2,7 @@ import datetime
 from datetime import date
 import matplotlib.pyplot as plt
 
-from CurrencyRate.parse_response import parse_by_range_date, parse_by_date
+from CurrencyRate.parse_response import parse_by_range_date, parse_by_date, save_to_csv_file, save_to_json_file
 
 
 def create_dict_for_drow_graph(result):
@@ -47,16 +47,21 @@ def drow_graph(result, for_sale: bool):
 
 
 def main(start_date: date,
-         end_date: date = 0,
+         end_date = 0,
          to_csv: bool = False,
          to_json: bool = False,
          add_graph: bool = False,
-         path_where_save :str = ''):
+         path_where_save: str = ''):
     if end_date == 0:
         result = parse_by_date(start_date, save_to_json=to_json, save_to_csv=to_csv)
+
     else:
         result = parse_by_range_date(start_date=start_date, end_date=end_date, save_to_json=to_json, save_to_csv=to_csv)
 
         if add_graph:
             drow_graph(result, for_sale=True)
+    if to_csv:
+        save_to_csv_file(result, start_date=start_date, end_date=end_date, path_where_save=path_where_save)
+    if to_json:
+        save_to_json_file(result, start_date=start_date, end_date=end_date, path_where_save=path_where_save)
     return result
